@@ -76,9 +76,8 @@ public class LocationShould
         var location = Location.CreateRandom();
 
         //Assert
-        location.IsSuccess.Should().BeTrue();
-        location.Value.X.Should().BeGreaterThan(0).And.BeLessThan(11);
-        location.Value.Y.Should().BeGreaterThan(0).And.BeLessThan(11);
+        location.X.Should().BeGreaterThan(0).And.BeLessThan(11);
+        location.Y.Should().BeGreaterThan(0).And.BeLessThan(11);
     }
 
     [Theory]

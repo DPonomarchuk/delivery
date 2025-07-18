@@ -26,6 +26,9 @@ public class Location : ValueObject
         Y = y;
     }
 
+    private const short MinCoordinateValue = 1;
+    private const short MaxCoordinateValue = 10;
+
     /// <summary>
     /// Координата по горизонтали
     /// </summary>
@@ -44,10 +47,10 @@ public class Location : ValueObject
     /// <returns></returns>
     public static Result<Location, Error> Create(short x, short y)
     {
-        if (x <= 0) return GeneralErrors.ValueIsRequired(nameof(x));
-        if (y <= 0) return GeneralErrors.ValueIsRequired(nameof(y));
-        if (x > 10) return GeneralErrors.ValueIsInvalid(nameof(x));
-        if (y > 10) return GeneralErrors.ValueIsInvalid(nameof(y));
+        if (x < MinCoordinateValue) return GeneralErrors.ValueIsRequired(nameof(x));
+        if (y < MinCoordinateValue) return GeneralErrors.ValueIsRequired(nameof(y));
+        if (x > MaxCoordinateValue) return GeneralErrors.ValueIsInvalid(nameof(x));
+        if (y > MaxCoordinateValue) return GeneralErrors.ValueIsInvalid(nameof(y));
         return new Location(x, y);
     }
 
@@ -55,10 +58,11 @@ public class Location : ValueObject
     /// Создание координаты со случайными значениями
     /// </summary>
     /// <returns></returns>
-    public static Result<Location, Error> CreateRandom()
+    public static Location CreateRandom()
     {
         var random = new Random();
-        return Create((short)random.Next(1, 10), (short)random.Next(1, 10));
+        return Create((short)random.Next(MinCoordinateValue, MaxCoordinateValue+1),
+            (short)random.Next(MinCoordinateValue, MaxCoordinateValue+1)).Value;
     }
 
     /// <summary>
@@ -69,21 +73,6 @@ public class Location : ValueObject
     public short CalculateDistance(Location other)
     {
         return (short)(Math.Abs(X - other.X) + Math.Abs(Y - other.Y));
-    }
-
-    protected bool Equals(Location other)
-    {
-        return base.Equals(other) && X == other.X && Y == other.Y;
-    }
-
-    public static bool operator ==(Location left, Location right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(Location left, Location right)
-    {
-        return !(left == right);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
