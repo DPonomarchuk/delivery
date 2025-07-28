@@ -61,15 +61,6 @@ public class StoragePlace : Entity<Guid>
     }
 
     /// <summary>
-    /// Создать место хранения "Сумка"
-    /// </summary>
-    /// <returns></returns>
-    public static StoragePlace CreateBag()
-    {
-        return new StoragePlace("Сумка", 10);
-    }
-
-    /// <summary>
     /// Проверка возможности добавления заказа
     /// </summary>
     /// <param name="volume">Объем заказа</param>

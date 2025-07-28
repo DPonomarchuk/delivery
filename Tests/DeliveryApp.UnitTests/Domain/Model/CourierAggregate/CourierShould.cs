@@ -49,10 +49,9 @@ public class CourierShould
     {
         //Arrange
         var courier = Courier.Create("Ваня", 7, Location.CreateRandom()).Value;
-        var storagePlace = StoragePlace.Create("Корзина", 5).Value;
 
         //Act
-        var result = courier.AddStoragePlace(storagePlace);
+        var result = courier.AddStoragePlace("Корзина", 5);
 
         //Assert
         result.IsSuccess.Should().BeTrue();
@@ -68,7 +67,7 @@ public class CourierShould
         var courier = Courier.Create("Ваня", 7, Location.CreateRandom()).Value;
 
         //Act
-        var result = courier.AddStoragePlace(null);
+        var result = courier.AddStoragePlace("", -1);
 
         //Assert
         result.IsSuccess.Should().BeFalse();
@@ -80,8 +79,7 @@ public class CourierShould
     {
         //Arrange
         var courier = Courier.Create("Ваня", 7, Location.CreateRandom()).Value;
-        var storagePlace = StoragePlace.Create("Корзина", 15).Value;
-        courier.AddStoragePlace(storagePlace);
+        courier.AddStoragePlace("Корзина", 15);
         var order = Order.Create(Guid.NewGuid(), Location.CreateRandom(), 14).Value;
 
         //Act
@@ -97,8 +95,7 @@ public class CourierShould
     {
         //Arrange
         var courier = Courier.Create("Ваня", 7, Location.CreateRandom()).Value;
-        var storagePlace = StoragePlace.Create("Корзина", 15).Value;
-        courier.AddStoragePlace(storagePlace);
+        courier.AddStoragePlace("Корзина", 15);
         var order = Order.Create(Guid.NewGuid(), Location.CreateRandom(), 16).Value;
 
         //Act
@@ -114,8 +111,7 @@ public class CourierShould
     {
         //Arrange
         var courier = Courier.Create("Ваня", 7, Location.CreateRandom()).Value;
-        var storagePlace = StoragePlace.Create("Корзина", 15).Value;
-        courier.AddStoragePlace(storagePlace);
+        courier.AddStoragePlace("Корзина", 15);
 
         //Act
         var result = courier.CanTakeOrder(null);

@@ -49,20 +49,25 @@ public class Courier : Aggregate<Guid>
         if (location is null) return GeneralErrors.ValueIsRequired(nameof(location));
 
         var courier = new Courier(name, speed, location);
-        courier.AddStoragePlace(StoragePlace.CreateBag());
+        courier.AddStoragePlace("Сумка", 10);
         return courier;
     }
 
     /// <summary>
     /// Добавления места хранения
     /// </summary>
-    /// <param name="storagePlace">Место хранения</param>
+    /// <param name="name">Название</param>
+    /// <param name="volume">Объем</param>
     /// <returns>Результат операции</returns>
-    public UnitResult<Error> AddStoragePlace(StoragePlace storagePlace)
+    public UnitResult<Error> AddStoragePlace(string name, int volume)
     {
-        if (storagePlace is null) return GeneralErrors.ValueIsRequired(nameof(storagePlace));
+        var storagePlace = StoragePlace.Create(name, volume);
+        if (storagePlace.IsFailure)
+        {
+            return storagePlace.Error;
+        }
 
-        StoragePlaces.Add(storagePlace);
+        StoragePlaces.Add(storagePlace.Value);
         return UnitResult.Success<Error>();
     }
 
