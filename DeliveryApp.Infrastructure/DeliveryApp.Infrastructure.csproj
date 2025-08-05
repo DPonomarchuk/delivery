@@ -39,4 +39,8 @@
         <None Remove="Adapters\Grpc\GeoService\Contract.proto"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Adapters\Postgres\Migrations\" />
+    </ItemGroup>
+
 </Project>
