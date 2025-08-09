@@ -34,10 +34,9 @@ public class CourierRepository : ICourierRepository
         return courier;
     }
 
-    public IEnumerable<Courier> GetAllFree()
+    public async Task<List<Courier>> GetAllFree()
     {
-        var couriers = _dbContext.Couriers.Include(c => c.StoragePlaces)
-            .Where(c => c.StoragePlaces.All(x => x.OrderId == null));
-        return couriers;
+        return await _dbContext.Couriers.Include(c => c.StoragePlaces)
+            .Where(c => c.StoragePlaces.All(x => x.OrderId == null)).ToListAsync();
     }
 }

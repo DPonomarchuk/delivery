@@ -154,11 +154,12 @@ public class CourierRepositoryShould : IAsyncLifetime
         await unitOfWork.SaveChangesAsync();
 
         //Act
-        var freeCouriersResult = courierRepository.GetAllFree().ToList();
+        var freeCouriersResult = await courierRepository.GetAllFree();
 
         // Assert
         freeCouriersResult.Should().NotBeEmpty();
         freeCouriersResult.Should().HaveCount(2);
-        freeCouriersResult.First().Should().BeEquivalentTo(courier3);
+        freeCouriersResult.Should().Contain(courier3);
+        freeCouriersResult.Should().Contain(courier4);
     }
 }
