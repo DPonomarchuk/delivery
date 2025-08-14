@@ -12,14 +12,16 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, UnitResult
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGeoClient _geoClient;
     
     /// <summary>
     ///     Ctr
     /// </summary>
-    public CreateOrderHandler(IUnitOfWork unitOfWork, IOrderRepository orderRepository)
+    public CreateOrderHandler(IUnitOfWork unitOfWork, IOrderRepository orderRepository, IGeoClient geoClient)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+        _geoClient = geoClient;
     }
     
     public async Task<UnitResult<Error>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -27,9 +29,10 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, UnitResult
         var getOrderResult = await _orderRepository.GetAsync(request.OrderId);
         if (getOrderResult.HasValue) return UnitResult.Success<Error>();
 
-        var location = Location.CreateRandom();
+        var location = await _geoClient.GetLocation(request.Street, cancellationToken);
+        if (location.IsFailure) return location.Error;
 
-        var orderCreateResult = Order.Create(request.OrderId, location, request.Volume);
+        var orderCreateResult = Order.Create(request.OrderId, location.Value, request.Volume);
         if (orderCreateResult.IsFailure) return orderCreateResult;
         var order = orderCreateResult.Value;
 

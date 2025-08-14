@@ -38,9 +38,20 @@
         <None Remove="Adapters\Kafka\BasketConfirmed\Contract.proto"/>
         <None Remove="Adapters\Grpc\GeoService\Contract.proto"/>
     </ItemGroup>
-
+    
     <ItemGroup>
       <Folder Include="Adapters\Postgres\Migrations\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Protobuf Include="Adapters\Grpc\Contract.proto">
+        <GrpcServices>Both</GrpcServices>
+        <Access>Public</Access>
+        <ProtoCompile>True</ProtoCompile>
+        <CompileOutputs>True</CompileOutputs>
+        <OutputDir>obj\Debug\net9.0\</OutputDir>
+        <Generator>MSBuild:Compile</Generator>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Protobuf>
+    </ItemGroup>
 </Project>

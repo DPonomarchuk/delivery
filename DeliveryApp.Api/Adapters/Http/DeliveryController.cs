@@ -27,7 +27,7 @@ public class DeliveryController : DefaultApiController
     public override async Task<IActionResult> CreateOrder()
     {
         var orderId =  Guid.NewGuid();
-        var streetName = "Колотушкина";
+        var streetName = "Айтишная";
         
         var createOrderCommand = CreateOrderCommand.Create(orderId, streetName, 5);
         if(createOrderCommand.IsFailure) return BadRequest(createOrderCommand.Error);

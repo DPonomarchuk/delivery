@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Reflection;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Api;
@@ -10,10 +12,14 @@ using DeliveryApp.Core.Application.Queries.GetCreatedAndAssignedOrders;
 using DeliveryApp.Core.Application.UseCases.Queries.GetCreatedAndAssignedOrders;
 using DeliveryApp.Core.Domain.Services;
 using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Grpc;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -87,6 +93,10 @@ builder.Services.AddControllers(options => { options.InputFormatters.Insert(0, n
             NamingStrategy = new CamelCaseNamingStrategy()
         });
     });
+
+// gRPC
+builder.Services.AddScoped<IGeoClient, GeoClient>();
+
 
 // Swagger
 builder.Services.AddSwaggerGen(options =>
