@@ -11,7 +11,7 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Confluent.Kafka" Version="2.10.1" />
+        <PackageReference Include="Confluent.Kafka" Version="2.11.0" />
         <PackageReference Include="Dapper" Version="2.1.66"/>
         <PackageReference Include="Google.Protobuf" Version="3.31.1" />
         <PackageReference Include="Grpc.Tools" Version="2.72.0">
@@ -51,5 +51,12 @@
         <_ContentIncludedByDefault Remove="Adapters\Http\Contract\src\DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi\appsettings.json"/>
         <_ContentIncludedByDefault Remove="Adapters\Http\Contract\src\DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi\Properties\launchSettings.json"/>
         <_ContentIncludedByDefault Remove="Adapters\Http\Contract\src\DeliveryApp.Api.Adapters.Http.Contract.src.OpenApi\wwwroot\openapi-original.json"/>
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Adapters\Kafka\OrderChanged\Contract.proto" />
+      <Protobuf Include="Adapters\Kafka\BasketChanged\Contract.proto">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
     </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@ using System.Reflection;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Api;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
+using DeliveryApp.Api.Adapters.Kafka.BasketChanged;
 using DeliveryApp.Core.Application.Commands.AssignOrder;
 using DeliveryApp.Core.Application.Commands.CreateOrder;
 using DeliveryApp.Core.Application.Commands.MoveCouriers;
@@ -96,6 +97,15 @@ builder.Services.AddControllers(options => { options.InputFormatters.Insert(0, n
 
 // gRPC
 builder.Services.AddScoped<IGeoClient, GeoClient>();
+
+// Message Broker Consumer
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+    options.ShutdownTimeout = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddHostedService<ConsumerService>();
+
 
 
 // Swagger
