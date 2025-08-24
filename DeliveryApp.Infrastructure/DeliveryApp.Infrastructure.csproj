@@ -53,5 +53,10 @@
         <Generator>MSBuild:Compile</Generator>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Protobuf>
+      <None Remove="Adapters\Kafka\OrderStatusChanged\Contract.proto" />
+      <Protobuf Include="Adapters\Kafka\OrderStatusChanged\Contract.proto">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
     </ItemGroup>
 </Project>

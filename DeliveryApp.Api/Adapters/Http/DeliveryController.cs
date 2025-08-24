@@ -1,4 +1,5 @@
-﻿using DeliveryApp.Core.Application.Commands.CreateOrder;
+﻿using DeliveryApp.Core.Application.Commands.CreateCourier;
+using DeliveryApp.Core.Application.Commands.CreateOrder;
 using DeliveryApp.Core.Application.Queries.GetBusyCouriers;
 using DeliveryApp.Core.Application.Queries.GetCreatedAndAssignedOrders;
 using MediatR;
@@ -21,7 +22,14 @@ public class DeliveryController : DefaultApiController
 
     public override async Task<IActionResult> CreateCourier(NewCourier newCourier)
     {
-        throw new NotImplementedException();
+        var createCourierCommand = 
+            CreateCourierCommand.Create(newCourier.Name, newCourier.Speed);
+        if (createCourierCommand.IsFailure) return BadRequest(createCourierCommand.Error);
+        
+        var result = await _mediator.Send(createCourierCommand.Value);
+        if (result.IsSuccess) return Ok();
+        
+        return BadRequest(result.Error);
     }
 
     public override async Task<IActionResult> CreateOrder()
@@ -30,7 +38,7 @@ public class DeliveryController : DefaultApiController
         var streetName = "Айтишная";
         
         var createOrderCommand = CreateOrderCommand.Create(orderId, streetName, 5);
-        if(createOrderCommand.IsFailure) return BadRequest(createOrderCommand.Error);
+        if (createOrderCommand.IsFailure) return BadRequest(createOrderCommand.Error);
         
         var result = await _mediator.Send(createOrderCommand.Value);
         if (result.IsSuccess) return Ok();

@@ -4,7 +4,9 @@ using DeliveryApp.Core.Domain.SharedKernel;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using FluentAssertions;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -25,6 +27,7 @@ public class CourierRepositoryShould : IAsyncLifetime
         .Build();
 
     private ApplicationDbContext _context;
+    private IMediator _mediator;
 
     /// <summary>
     ///     Ctr
@@ -32,7 +35,9 @@ public class CourierRepositoryShould : IAsyncLifetime
     /// <remarks>Вызывается один раз перед всеми тестами в рамках этого класса</remarks>
     public CourierRepositoryShould()
     {
-
+        _mediator = Substitute.For<IMediator>();
+        _mediator.Publish(Arg.Any<object>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(true));
     }
 
     /// <summary>
@@ -70,7 +75,7 @@ public class CourierRepositoryShould : IAsyncLifetime
 
         //Act
         var courierRepository = new CourierRepository(_context);
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(_context, _mediator);
 
         await courierRepository.AddAsync(courier);
         await unitOfWork.SaveChangesAsync();
@@ -89,7 +94,7 @@ public class CourierRepositoryShould : IAsyncLifetime
         var courier = Courier.Create("Эльдар", 1, Location.Create(1, 1).Value).Value;
 
         var courierRepository = new CourierRepository(_context);
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(_context, _mediator);
         await courierRepository.AddAsync(courier);
         await unitOfWork.SaveChangesAsync();
 
@@ -118,7 +123,7 @@ public class CourierRepositoryShould : IAsyncLifetime
 
         //Act
         var courierRepository = new CourierRepository(_context);
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(_context, _mediator);
         await courierRepository.AddAsync(courier);
         await unitOfWork.SaveChangesAsync();
 
@@ -150,7 +155,7 @@ public class CourierRepositoryShould : IAsyncLifetime
         var courier4 = Courier.Create("Себастьян", 1, Location.Create(4, 4).Value).Value;
         await courierRepository.AddAsync(courier4);
 
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(_context, _mediator);
         await unitOfWork.SaveChangesAsync();
 
         //Act

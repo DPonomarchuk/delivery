@@ -6,14 +6,18 @@ using DeliveryApp.Api;
 using DeliveryApp.Api.Adapters.BackgroundJobs;
 using DeliveryApp.Api.Adapters.Kafka.BasketChanged;
 using DeliveryApp.Core.Application.Commands.AssignOrder;
+using DeliveryApp.Core.Application.Commands.CreateCourier;
 using DeliveryApp.Core.Application.Commands.CreateOrder;
 using DeliveryApp.Core.Application.Commands.MoveCouriers;
+using DeliveryApp.Core.Application.DomainEventHandlers;
 using DeliveryApp.Core.Application.Queries.GetBusyCouriers;
 using DeliveryApp.Core.Application.Queries.GetCreatedAndAssignedOrders;
 using DeliveryApp.Core.Application.UseCases.Queries.GetCreatedAndAssignedOrders;
+using DeliveryApp.Core.Domain.Model.OrderAggregate.DomainEvents;
 using DeliveryApp.Core.Domain.Services;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Grpc;
+using DeliveryApp.Infrastructure.Adapters.Kafka.OrderStatusChanged;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
@@ -48,6 +52,7 @@ builder.Services.AddCors(options =>
 // Configuration
 builder.Services.ConfigureOptions<SettingsSetup>();
 var connectionString = builder.Configuration["CONNECTION_STRING"];
+var messageBrokerHost = builder.Configuration["MESSAGE_BROKER_HOST"];
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
         options.UseNpgsql(connectionString,
@@ -75,6 +80,7 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddTransient<IRequestHandler<CreateOrderCommand, UnitResult<Error>>, CreateOrderHandler>();
 builder.Services.AddTransient<IRequestHandler<AssignOrderCommand, UnitResult<Error>>, AssignOrderHandler>();
 builder.Services.AddTransient<IRequestHandler<MoveCouriersCommand, UnitResult<Error>>, MoveCouriersHandler>();
+builder.Services.AddTransient<IRequestHandler<CreateCourierCommand, UnitResult<Error>>, CreateCourierHandler>();
 
 // Queries
 builder.Services.AddTransient<IRequestHandler<GetBusyCouriersCommand, 
@@ -106,7 +112,11 @@ builder.Services.Configure<HostOptions>(options =>
 });
 builder.Services.AddHostedService<ConsumerService>();
 
-
+// Domain event handlers
+builder.Services.AddTransient<INotificationHandler<OrderChangedDomainEvent>, OrderChangedEventHandler>();
+    
+// Message Broker Producer
+builder.Services.AddTransient<IMessageBusProducer>(_ => new Producer(messageBrokerHost));
 
 // Swagger
 builder.Services.AddSwaggerGen(options =>

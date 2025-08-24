@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Domain.Model.CourierAggregate;
+using DeliveryApp.Core.Domain.Model.OrderAggregate.DomainEvents;
 using DeliveryApp.Core.Domain.SharedKernel;
 using Primitives;
 
@@ -95,6 +96,7 @@ public sealed class Order : Aggregate<Guid>
         if (CourierId == null) return Errors.ErrCantCompleteNotAssignedOrder();
 
         Status = OrderStatus.Completed;
+        RaiseDomainEvent(new OrderChangedDomainEvent(this));
         return UnitResult.Success<Error>();
     }
 
