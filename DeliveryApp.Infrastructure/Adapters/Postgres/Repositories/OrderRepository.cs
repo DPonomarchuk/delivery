@@ -35,7 +35,7 @@ public class OrderRepository : IOrderRepository
     public async Task<Maybe<Order>> GetFirstInCreatedStatusAsync()
     {
         var order = await _dbContext
-            .Orders
+            .Orders.OrderBy(x => x.Volume)
             .FirstOrDefaultAsync(o => o.Status.Name == OrderStatus.Created.Name);
         return order;
     }
