@@ -19,6 +19,7 @@ using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure.Adapters.Grpc;
 using DeliveryApp.Infrastructure.Adapters.Kafka.OrderStatusChanged;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
+using DeliveryApp.Infrastructure.Adapters.Postgres.BackgroundJobs;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -117,6 +118,20 @@ builder.Services.AddTransient<INotificationHandler<OrderChangedDomainEvent>, Ord
     
 // Message Broker Producer
 builder.Services.AddTransient<IMessageBusProducer>(_ => new Producer(messageBrokerHost));
+
+// CronJob
+builder.Services.AddQuartz(configure =>
+{
+    var processOutboxMessagesJobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+    configure
+        .AddJob<ProcessOutboxMessagesJob>(processOutboxMessagesJobKey)
+        .AddTrigger(
+            trigger => trigger.ForJob(processOutboxMessagesJobKey)
+                .WithSimpleSchedule(
+                    schedule => schedule.WithIntervalInSeconds(3)
+                        .RepeatForever()));
+});
+builder.Services.AddQuartzHostedService();
 
 // Swagger
 builder.Services.AddSwaggerGen(options =>
